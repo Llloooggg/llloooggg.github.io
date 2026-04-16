@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects</title>
+  <meta name="description" content="Open-source projects">
+  <meta property="og:title" content="Projects">
+  <meta property="og:description" content="Open-source projects">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg0: #1B1D23;
+      --bg1: #21252B;
+      --bg2: #282C34;
+      --bg3: #2C313A;
+      --bg4: #323842;
+      --fg: #ABB2BF;
+      --fg-dim: #7F848E;
+      --fg-faint: #5C6370;
+      --fg-bright: #D7DAE0;
+      --accent: #4D78CC;
+      --blue: #61AFEF;
+      --green: #98C379;
+      --red: #E06C75;
+      --yellow: #E5C07B;
+      --orange: #D19A66;
+      --cyan: #56B6C2;
+      --purple: #C678DD;
+      --border: #181A1F;
+      --border-light: #3E4452;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg2);
+      color: var(--fg);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Hero ───────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+      padding: 72px 0 64px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid var(--border-light);
+      margin-bottom: 24px;
+      background: var(--bg3);
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--fg-bright);
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+
+    .hero-login {
+      font-size: 20px;
+      color: var(--fg-dim);
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .hero-bio {
+      font-size: 17px;
+      color: var(--fg);
+      margin-bottom: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-contacts {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      margin: 0 auto 32px;
+      width: fit-content;
+      font-size: 14px;
+      color: var(--fg-dim);
+    }
+
+    .hero-contacts a {
+      color: var(--fg-dim);
+      transition: color 0.15s;
+    }
+
+    .hero-contacts a:hover { color: var(--blue); }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .contact-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      fill: var(--fg-dim);
+    }
+
+    .hero-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #F8FAFD;
+    }
+
+    .btn-primary:hover { background: #5A85D8; }
+
+    .btn-secondary {
+      background: var(--bg3);
+      color: var(--fg-bright);
+      border: 1px solid var(--border-light);
+    }
+
+    .btn-secondary:hover { background: var(--bg4); }
+
+    /* ── Projects ───────────────────────────────────── */
+    .projects {
+      padding: 64px 0;
+      flex: 1;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--fg-bright);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .project-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* ── Card ───────────────────────────────────────── */
+    .project-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s;
+      width: 100%;
+      max-width: 530px;
+      cursor: pointer;
+    }
+
+    .project-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .project-card-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .project-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .project-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      object-fit: contain;
+      background: var(--bg3);
+      padding: 4px;
+    }
+
+    .project-letter {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--fg-bright);
+    }
+
+    .project-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .project-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--blue);
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-repo-link {
+      font-size: 11px;
+      color: var(--fg-faint);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .project-repo-link:hover {
+      color: var(--blue);
+      text-decoration: underline;
+    }
+
+    .project-desc {
+      font-size: 14px;
+      color: var(--fg);
+      margin-bottom: 16px;
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .project-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .topic-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(77, 120, 204, 0.15);
+      color: var(--accent);
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .topic-tag:hover {
+      background: rgba(77, 120, 204, 0.3);
+    }
+
+    .project-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--fg-dim);
+      flex-wrap: wrap;
+    }
+
+    .meta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--fg-dim);
+      transition: color 0.15s;
+    }
+
+    .meta-link:hover { color: var(--blue); }
+
+    .lang-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* ── Card footer (release tag) ──────────────────── */
+    .project-card-footer {
+      padding: 8px 24px 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .release-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg3);
+      color: var(--green);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .release-tag:hover {
+      background: var(--bg4);
+    }
+
+    /* ── Screenshots strip ──────────────────────────── */
+    .project-screenshots {
+      display: flex;
+      gap: 8px;
+      padding: 0 24px 16px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--bg4) transparent;
+    }
+
+    .project-screenshots::-webkit-scrollbar { height: 4px; }
+    .project-screenshots::-webkit-scrollbar-thumb {
+      background: var(--bg4);
+      border-radius: 2px;
+    }
+
+    .project-screenshots img {
+      height: 100px;
+      width: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      cursor: zoom-in;
+      transition: border-color 0.15s;
+    }
+
+    .project-screenshots img:hover { border-color: var(--accent); }
+
+    /* ── Skeleton ────────────────────────────────────── */
+    .project-card.skeleton {
+      min-height: 200px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .error-msg {
+      text-align: center;
+      color: var(--fg-dim);
+      padding: 40px;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    .error-msg a { color: var(--blue); }
+    .error-msg a:hover { text-decoration: underline; }
+
+    /* ── Lightbox ───────────────────────────────────── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(27, 29, 35, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 32px;
+      cursor: zoom-out;
+      animation: lb-fade 0.15s ease-out;
+    }
+
+    .lightbox[hidden] { display: none; }
+
+    @keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .lightbox img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg2);
+      color: var(--fg-bright);
+      border: 1px solid var(--border-light);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .lightbox-close:hover { background: var(--bg3); }
+
+    /* ── Footer ─────────────────────────────────────── */
+    footer {
+      background: var(--bg0);
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--fg-dim);
+      font-size: 14px;
+    }
+
+    footer a { color: var(--blue); }
+    footer a:hover { text-decoration: underline; }
+
+    footer .sep {
+      margin: 0 8px;
+      color: var(--fg-faint);
+    }
+
+    footer .muted {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--fg-faint);
+    }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 36px; }
+      .hero-bio { font-size: 15px; }
+      .hero { padding: 48px 0 40px; }
+      .hero-contacts { gap: 12px; font-size: 13px; }
+      .section-title { font-size: 24px; }
+      .project-screenshots img { height: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <img id="avatar" src="" alt="Avatar" class="avatar" style="display:none">
+      <h1 id="hero-name"></h1>
+      <p id="hero-login" class="hero-login" style="display:none"></p>
+      <p id="hero-bio" class="hero-bio" style="display:none"></p>
+      <div id="hero-contacts" class="hero-contacts"></div>
+      <div class="hero-links">
+        <a id="hero-gh-link" href="#" class="btn btn-primary" target="_blank" rel="noopener">GitHub Profile</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="projects">
+    <div class="container">
+      <h2 class="section-title">Featured Projects</h2>
+      <div id="project-grid" class="project-grid">
+        <div class="project-card skeleton"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p id="footer-links"></p>
+      <p class="muted">OneDark theme</p>
+    </div>
+  </footer>
+
+  <div id="lightbox" class="lightbox" hidden>
+    <button type="button" class="lightbox-close" aria-label="Close">&times;</button>
+    <img src="" alt="">
+  </div>
+
+  <!-- Config is loaded first, then the app script uses it -->
+  <script src="config.js"></script>
+  <script>
+    /* ── Language colors (GitHub convention) ─────────── */
+    var LANG_COLORS = {
+      Dart: '#00B4AB', Go: '#00ADD8', JavaScript: '#F1E05A',
+      TypeScript: '#3178C6', Python: '#3572A5', Rust: '#DEA584',
+      Shell: '#89E051', Dockerfile: '#384D54', HTML: '#E34C26',
+      CSS: '#563D7C', 'C++': '#F34B7D', C: '#555555',
+      Java: '#B07219', Kotlin: '#A97BFF', Swift: '#F05138',
+      Ruby: '#701516', PHP: '#4F5D95', Lua: '#000080',
+      Makefile: '#427819', HCL: '#844FBA', Nix: '#7E7EFF',
+    };
+
+    var LETTER_COLORS = [
+      '#4D78CC', '#98C379', '#E06C75', '#E5C07B',
+      '#C678DD', '#56B6C2', '#D19A66', '#61AFEF',
+    ];
+
+    /* ── Helpers ─────────────────────────────────────── */
+    function parseRepo(url) {
+      var m = url.replace(/\/+$/, '').match(/github\.com\/([^/]+)\/([^/]+)/);
+      return m ? { owner: m[1], name: m[2] } : null;
+    }
+
+    function esc(s) {
+      var el = document.createElement('span');
+      el.textContent = s;
+      return el.innerHTML;
+    }
+
+    var grid = document.getElementById('project-grid');
+
+    /* ═══════════════════════════════════════════════════
+     *  PROFILE — fetched from /users/{user}
+     * ═══════════════════════════════════════════════════ */
+    async function loadProfile() {
+      try {
+        /* Fetch user profile + social accounts in parallel */
+        var results = await Promise.all([
+          fetch('https://api.github.com/users/' + GITHUB_USER),
+          fetch('https://api.github.com/users/' + GITHUB_USER + '/social_accounts')
+            .catch(function() { return null; }),
+        ]);
+
+        if (!results[0].ok) return;
+        var u = await results[0].json();
+        var socials = (results[1] && results[1].ok) ? await results[1].json() : [];
+
+        /* Avatar */
+        var av = document.getElementById('avatar');
+        av.src = u.avatar_url + '&s=240';
+        av.style.display = '';
+
+        /* Favicon */
+        var fav = document.querySelector('link[rel="icon"]');
+        if (!fav) {
+          fav = document.createElement('link');
+          fav.rel = 'icon';
+          document.head.appendChild(fav);
+        }
+        fav.href = u.avatar_url + '&s=64';
+
+        /* Name, login, title — GitHub-style: tab = login, page = full name + login */
+        document.getElementById('hero-name').textContent = u.name || u.login;
+        if (u.name && u.name !== u.login) {
+          var loginEl = document.getElementById('hero-login');
+          loginEl.textContent = u.login;
+          loginEl.style.display = '';
+        }
+        document.title = u.login;
+
+        /* Bio */
+        if (u.bio) {
+          var bioEl = document.getElementById('hero-bio');
+          bioEl.textContent = u.bio;
+          bioEl.style.display = '';
+        }
+
+        /* Octicon SVG paths (16×16, MIT-licensed Primer icons) */
+        var ICONS = {
+          location: '<svg class="contact-icon" viewBox="0 0 16 16"><path d="M12.596 11.596 8 16.182l-4.596-4.596a6.5 6.5 0 1 1 9.192 0ZM3.757 4.757a4.5 4.5 0 1 0 6.364 0 4.5 4.5 0 0 0-6.364 0ZM8 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"/></svg>',
+          clock: '<svg class="contact-icon" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/></svg>',
+          mail: '<svg class="contact-icon" viewBox="0 0 16 16"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"/></svg>',
+          link: '<svg class="contact-icon" viewBox="0 0 16 16"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"/></svg>',
+          org: '<svg class="contact-icon" viewBox="0 0 16 16"><path d="M1.75 16A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0h8.5C11.216 0 12 .784 12 1.75v12.5c0 .085-.006.168-.018.25h2.268a.25.25 0 0 0 .25-.25V8.285a.25.25 0 0 0-.111-.208l-1.055-.703a.749.749 0 1 1 .832-1.248l1.055.703c.487.325.777.871.777 1.456v5.965A1.75 1.75 0 0 1 14.25 16h-3.5a.766.766 0 0 1-.197-.026c-.099.017-.2.026-.303.026h-3a.75.75 0 0 1-.75-.75V14h-1v1.25a.75.75 0 0 1-.75.75Zm-.25-1.75c0 .138.112.25.25.25H4v-1.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 .75.75v1.25h2.25a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25ZM3.75 6h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 3.75A.75.75 0 0 1 3.75 3h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 3.75Zm4 3A.75.75 0 0 1 7.75 6h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 7 6.75ZM7.75 3h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 9.75A.75.75 0 0 1 3.75 9h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 9.75ZM7.75 9h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5Z"/></svg>',
+          twitter: '<svg class="contact-icon" viewBox="0 0 16 16"><path d="M9.294 6.928 14.357 1h-1.2L8.762 6.147 5.25 1H1.2l5.31 7.784L1.2 15h1.2l4.642-5.436L10.751 15h4.05L9.294 6.928ZM7.651 8.852l-.538-.775L2.832 1.91h1.843l3.454 4.977.538.775 4.491 6.47h-1.843L7.651 8.852Z"/></svg>',
+        };
+
+        /* Build contact items — from user profile fields */
+        var contacts = [];
+        if (u.location) {
+          contacts.push('<span class="contact-item">' + ICONS.location + esc(u.location) + '</span>');
+        }
+        if (typeof TIMEZONE !== 'undefined' && TIMEZONE) {
+          var now = new Date();
+          var tzMatch = TIMEZONE.match(/([+-])(\d{2}):?(\d{2})/);
+          var timeStr = '';
+          if (tzMatch) {
+            var offsetMin = (parseInt(tzMatch[2]) * 60 + parseInt(tzMatch[3])) * (tzMatch[1] === '+' ? 1 : -1);
+            var local = new Date(now.getTime() + (offsetMin + now.getTimezoneOffset()) * 60000);
+            timeStr = String(local.getHours()).padStart(2, '0') + ':' + String(local.getMinutes()).padStart(2, '0');
+          }
+          contacts.push('<span class="contact-item">' + ICONS.clock
+            + (timeStr ? esc(timeStr) + ' (' + esc(TIMEZONE) + ')' : esc(TIMEZONE))
+            + '</span>');
+        }
+        var email = u.email || (typeof EMAIL !== 'undefined' ? EMAIL : null);
+        if (email) {
+          contacts.push('<a href="mailto:' + esc(email) + '" class="contact-item">' + ICONS.mail + esc(email) + '</a>');
+        }
+        if (u.blog) {
+          var blog = u.blog.replace(/^https?:\/\//, '');
+          contacts.push('<a href="' + esc(u.blog.startsWith('http') ? u.blog : 'https://' + u.blog)
+            + '" target="_blank" rel="noopener" class="contact-item">' + ICONS.link + esc(blog) + '</a>');
+        }
+        if (u.twitter_username) {
+          contacts.push('<a href="https://twitter.com/' + esc(u.twitter_username)
+            + '" target="_blank" rel="noopener" class="contact-item">' + ICONS.twitter + '@' + esc(u.twitter_username) + '</a>');
+        }
+        if (u.company) {
+          contacts.push('<span class="contact-item">' + ICONS.org + esc(u.company) + '</span>');
+        }
+
+        /* Contacts — from social accounts API */
+        socials.forEach(function(s) {
+          var url = s.url || '';
+          if (url.match(/t\.me\//i) || s.provider === 'telegram') {
+            var handle = url.replace(/^https?:\/\/(t\.me|telegram\.me)\//i, '');
+            contacts.push('<a href="' + esc(url) + '" target="_blank" rel="noopener" class="contact-item">'
+              + ICONS.link + esc(url.replace(/^https?:\/\//, '')) + '</a>');
+          } else if (url.match(/linkedin\.com/i) || s.provider === 'linkedin') {
+            contacts.push('<a href="' + esc(url) + '" target="_blank" rel="noopener" class="contact-item">'
+              + ICONS.link + esc(url.replace(/^https?:\/\//, '')) + '</a>');
+          } else if (url.match(/twitter\.com|x\.com/i) || s.provider === 'twitter') {
+            var tHandle = url.replace(/^https?:\/\/(twitter\.com|x\.com)\//i, '');
+            contacts.push('<a href="' + esc(url) + '" target="_blank" rel="noopener" class="contact-item">'
+              + ICONS.twitter + '@' + esc(tHandle) + '</a>');
+          } else if (s.provider === 'generic' && url) {
+            if (u.blog && url.replace(/\/+$/, '') === u.blog.replace(/\/+$/, '')) return;
+            contacts.push('<a href="' + esc(url) + '" target="_blank" rel="noopener" class="contact-item">'
+              + ICONS.link + esc(url.replace(/^https?:\/\//, '')) + '</a>');
+          }
+        });
+
+        document.getElementById('hero-contacts').innerHTML = contacts.join('');
+
+        /* GitHub link */
+        document.getElementById('hero-gh-link').href = u.html_url;
+
+        /* Footer */
+        document.getElementById('footer-links').innerHTML =
+          '<a href="' + esc(u.html_url) + '">GitHub</a>'
+          + (email
+              ? '<span class="sep">&middot;</span><a href="mailto:' + esc(email) + '">Contact</a>'
+              : '');
+      } catch (e) {
+        document.getElementById('hero-name').textContent = GITHUB_USER;
+        document.getElementById('hero-gh-link').href = 'https://github.com/' + GITHUB_USER;
+        document.getElementById('footer-links').innerHTML =
+          '<a href="https://github.com/' + esc(GITHUB_USER) + '">GitHub</a>';
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+     *  PROJECTS — fetched from /repos/{owner}/{name}
+     * ═══════════════════════════════════════════════════ */
+    async function loadProjects() {
+      try {
+        var fetches = PROJECTS.map(function(p) {
+          var r = parseRepo(p.repo);
+          if (!r) return Promise.resolve(null);
+          return Promise.all([
+            fetch('https://api.github.com/repos/' + r.owner + '/' + r.name),
+            fetch('https://api.github.com/repos/' + r.owner + '/' + r.name + '/releases/latest')
+              .catch(function() { return null; }),
+          ]);
+        });
+
+        var results = await Promise.all(fetches);
+        var cards = [];
+
+        for (var i = 0; i < results.length; i++) {
+          if (!results[i]) continue;
+          var repoRes = results[i][0];
+          var releaseRes = results[i][1];
+          if (!repoRes.ok) continue;
+
+          cards.push({
+            config: PROJECTS[i],
+            repo: await repoRes.json(),
+            release: (releaseRes && releaseRes.ok) ? await releaseRes.json() : null,
+            index: i,
+          });
+        }
+
+        if (cards.length === 0) {
+          grid.innerHTML = '<p class="error-msg">Could not load repos. '
+            + 'Visit <a href="https://github.com/' + esc(GITHUB_USER) + '">GitHub</a> directly.</p>';
+          return;
+        }
+
+        grid.innerHTML = cards.map(renderCard).join('');
+      } catch (err) {
+        grid.innerHTML = '<p class="error-msg">Could not load repos. '
+          + 'Visit <a href="https://github.com/' + esc(GITHUB_USER) + '">GitHub</a> directly.</p>';
+      }
+    }
+
+    /* ── Render one card ────────────────────────────── */
+    function renderCard(item) {
+      var repo = item.repo;
+      var cfg = item.config;
+      var release = item.release;
+      var parsed = parseRepo(cfg.repo);
+      var lang = repo.language || '';
+      var langColor = LANG_COLORS[lang] || '#858585';
+      var desc = esc(repo.description || 'No description');
+      var stars = repo.stargazers_count || 0;
+      var forks = repo.forks_count || 0;
+      var topics = repo.topics || [];
+
+      /* Card destination */
+      var cardUrl = cfg.repo;
+      if (cfg.has_site && parsed) {
+        cardUrl = 'https://' + parsed.owner.toLowerCase() + '.github.io/' + parsed.name + '/';
+      }
+
+      /* Icon or letter fallback */
+      var iconHtml;
+      if (cfg.icon) {
+        iconHtml = '<img src="' + esc(cfg.icon) + '" alt="" class="project-logo">';
+      } else {
+        var letter = repo.name.charAt(0).toUpperCase();
+        var bg = LETTER_COLORS[item.index % LETTER_COLORS.length];
+        iconHtml = '<span class="project-letter" style="background:' + bg + '">' + letter + '</span>';
+      }
+
+      /* Repo link */
+      var repoLink = '<a href="' + esc(cfg.repo)
+        + '" class="project-repo-link" target="_blank" rel="noopener" onclick="event.stopPropagation()">'
+        + esc(parsed.owner + '/' + parsed.name) + '</a>';
+
+      /* Topics — all of them, each links to github.com/topics/{topic} */
+      var topicsHtml = '';
+      if (topics.length > 0) {
+        topicsHtml = '<div class="project-topics" onclick="event.stopPropagation()">'
+          + topics.map(function(t) {
+              return '<a href="https://github.com/topics/' + encodeURIComponent(t)
+                + '" target="_blank" rel="noopener" class="topic-tag">' + esc(t) + '</a>';
+            }).join('')
+          + '</div>';
+      }
+
+      /* Meta: language, stars, forks — all clickable */
+      var meta = '<div class="project-meta" onclick="event.stopPropagation()">';
+      if (lang) {
+        meta += '<a href="' + esc(cfg.repo) + '/search?l=' + encodeURIComponent(lang)
+          + '" target="_blank" rel="noopener" class="meta-link">'
+          + '<span class="lang-dot" style="background:' + langColor + '"></span> ' + esc(lang) + '</a>';
+      }
+      if (stars > 0) {
+        meta += '<a href="' + esc(cfg.repo) + '/stargazers" target="_blank" rel="noopener" class="meta-link">'
+          + '&#9733; ' + stars + '</a>';
+      }
+      if (forks > 0) {
+        meta += '<a href="' + esc(cfg.repo) + '/forks" target="_blank" rel="noopener" class="meta-link">'
+          + '&#9906; ' + forks + '</a>';
+      }
+      meta += '</div>';
+
+      /* Screenshots strip */
+      var screenshotsHtml = '';
+      if (cfg.screenshots && cfg.screenshots.length > 0) {
+        screenshotsHtml = '<div class="project-screenshots" onclick="event.stopPropagation()">'
+          + cfg.screenshots.map(function(url) {
+              return '<img src="' + esc(url) + '" alt="Screenshot" onclick="openLightbox(this.src)">';
+            }).join('')
+          + '</div>';
+      }
+
+      /* Release tag — bottom right of card */
+      var footerHtml = '';
+      if (release && release.tag_name) {
+        footerHtml = '<div class="project-card-footer" onclick="event.stopPropagation()">'
+          + '<a href="' + esc(release.html_url)
+          + '" target="_blank" rel="noopener" class="release-tag">'
+          + '&#9660; ' + esc(release.tag_name) + '</a>'
+          + '</div>';
+      }
+
+      return '<div class="project-card" onclick="window.open(\'' + esc(cardUrl) + '\',\'_blank\')">'
+        + '<div class="project-card-body">'
+          + '<div class="project-header">'
+            + iconHtml
+            + '<div class="project-title-group">'
+              + '<span class="project-name">' + esc(repo.name) + '</span>'
+              + repoLink
+            + '</div>'
+          + '</div>'
+          + '<p class="project-desc">' + desc + '</p>'
+          + topicsHtml
+          + meta
+        + '</div>'
+        + screenshotsHtml
+        + footerHtml
+        + '</div>';
+    }
+
+    /* ── Lightbox ───────────────────────────────────── */
+    var lb = document.getElementById('lightbox');
+
+    function openLightbox(src) {
+      lb.querySelector('img').src = src;
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lb.hidden = true;
+      lb.querySelector('img').src = '';
+      document.body.style.overflow = '';
+    }
+
+    lb.addEventListener('click', closeLightbox);
+    lb.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !lb.hidden) closeLightbox();
+    });
+
+    /* ── Go ──────────────────────────────────────────── */
+    loadProfile();
+    loadProjects();
+  </script>
+</body>
+</html>
