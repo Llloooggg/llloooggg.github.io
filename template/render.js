@@ -63,7 +63,7 @@
     renderHero(repoData, release);
     renderScreenshots();
     renderReadme(repoData);
-    renderFooter();
+    renderFooter(repoData);
   })();
 
   /* ── Hero ───────────────────────────────────────────── */
@@ -105,15 +105,19 @@
       st.style.display = '';
     }
 
-    /* Badges */
+    /* Badges — accept flat array [{...}, {...}] (one row) or
+     * array of rows [[{...}, {...}], [{...}]] for grouping */
     if (cfg.badges && cfg.badges.length > 0) {
+      var rows = Array.isArray(cfg.badges[0]) ? cfg.badges : [cfg.badges];
       var badges = document.getElementById('hero-badges');
-      badges.innerHTML = '<div class="badge-row">' + cfg.badges.map(function (b) {
-        var img = '<img src="' + esc(b.img) + '" alt="' + esc(b.alt || '') + '">';
-        return b.link
-          ? '<a href="' + esc(b.link) + '" target="_blank" rel="noopener">' + img + '</a>'
-          : img;
-      }).join('') + '</div>';
+      badges.innerHTML = rows.map(function (row) {
+        return '<div class="badge-row">' + row.map(function (b) {
+          var img = '<img src="' + esc(b.img) + '" alt="' + esc(b.alt || '') + '">';
+          return b.link
+            ? '<a href="' + esc(b.link) + '" target="_blank" rel="noopener">' + img + '</a>'
+            : img;
+        }).join('') + '</div>';
+      }).join('');
       badges.style.display = '';
     }
 
@@ -197,7 +201,7 @@
   }
 
   /* ── Footer ──────────────────────────────────────────── */
-  function renderFooter() {
+  function renderFooter(repoData) {
     var userSite = 'https://' + owner.toLowerCase() + '.github.io';
     document.getElementById('footer-links').innerHTML =
       '<a href="' + esc(repoUrl) + '">GitHub</a>'
@@ -207,6 +211,16 @@
       + '<a href="' + esc(repoUrl) + '/releases">Releases</a>'
       + '<span class="sep">&middot;</span>'
       + '<a href="' + esc(userSite) + '">All Projects</a>';
+
+    /* Muted line: custom override, or auto-composed from license + theme */
+    var muted = document.querySelector('footer .muted');
+    if (!muted) return;
+    if (cfg.footerMuted) {
+      muted.textContent = cfg.footerMuted;
+    } else if (repoData && repoData.license && repoData.license.spdx_id
+               && repoData.license.spdx_id !== 'NOASSERTION') {
+      muted.textContent = repoData.license.spdx_id + ' · OneDark theme';
+    }
   }
 
   function setMeta(name, content) {

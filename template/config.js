@@ -32,8 +32,18 @@ var CONFIG = {
   //   { label: 'Documentation', url: 'https://...', primary: false },
   // ],
 
-  /* Extra shields.io badges (appended after the auto release/license badges). */
+  /* Shields.io badges. Accept either a flat array (one row) or an
+   * array of arrays for grouping into multiple rows. */
   // badges: [
   //   { alt: 'CI', img: 'https://.../badge.svg', link: 'https://...' },
   // ],
+  // badges: [
+  //   [ { alt: 'Release', img: '...', link: '...' },
+  //     { alt: 'License', img: '...', link: '...' } ],
+  //   [ { alt: 'CI',      img: '...', link: '...' } ],
+  // ],
+
+  /* Footer "muted" line. Default: "{license} · OneDark theme"
+   * when the repo has a recognized license, else "OneDark theme". */
+  // footerMuted: 'GPL-3.0 · Built with Flutter · OneDark theme',
 };
