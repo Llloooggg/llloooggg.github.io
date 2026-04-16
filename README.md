@@ -1,5 +1,8 @@
 # llloooggg.github.io
 
+[![Deploy](https://github.com/Llloooggg/llloooggg.github.io/actions/workflows/pages.yml/badge.svg)](https://github.com/Llloooggg/llloooggg.github.io/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 Personal site listing open-source projects. Zero build step, OneDark theme,
 everything configurable from a single file.
 
@@ -99,6 +102,12 @@ auto-serves from `main` root — pushing to `main` is all you need. For
 project-site templates, enable Pages in the project's repo settings and point
 it at `/docs/site`.
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for local preview, project layout,
+and commit message conventions. Security issues go through
+[SECURITY.md](./SECURITY.md).
+
 ## License
 
-MIT.
+[MIT](./LICENSE).
