@@ -50,24 +50,90 @@
     var repoData = null;
     var release = null;
 
-    try {
-      var results = await Promise.all([
-        fetch('https://api.github.com/repos/' + owner + '/' + repo),
-        fetch('https://api.github.com/repos/' + owner + '/' + repo + '/releases/latest')
-          .catch(function () { return null; }),
-      ]);
-      if (results[0].ok) repoData = await results[0].json();
-      if (results[1] && results[1].ok) release = await results[1].json();
-    } catch (e) { /* fall through */ }
+    /* Kick off all API discoveries in parallel.
+     * Auto-detect fills in anything the user didn't configure. */
+    var apiCalls = [
+      fetch('https://api.github.com/repos/' + owner + '/' + repo),
+      fetch('https://api.github.com/repos/' + owner + '/' + repo + '/releases/latest')
+        .catch(function () { return null; }),
+      (cfg.logo ? Promise.resolve(cfg.logo) : autoDetectLogo()),
+      (cfg.screenshots ? Promise.resolve(cfg.screenshots) : autoDetectScreenshots()),
+      (cfg.badges ? Promise.resolve(null) : autoDetectWorkflows()),
+    ];
 
-    renderHero(repoData, release);
-    renderScreenshots();
+    var results;
+    try { results = await Promise.all(apiCalls); }
+    catch (e) { results = [null, null, null, null, null]; }
+
+    if (results[0] && results[0].ok) repoData = await results[0].json();
+    if (results[1] && results[1].ok) release = await results[1].json();
+
+    var detectedLogo = results[2];
+    var detectedScreenshots = results[3] || [];
+    var detectedWorkflows = results[4] || [];
+
+    renderHero(repoData, release, detectedLogo, detectedWorkflows);
+    renderScreenshots(detectedScreenshots);
     renderReadme(repoData);
     renderFooter(repoData);
   })();
 
+  /* ── Auto-detect helpers ────────────────────────────── */
+  async function autoDetectLogo() {
+    var paths = [
+      'assets/icons/icon.png',
+      'assets/icon.png',
+      'assets/logo.png',
+      'icon.png',
+      'logo.png',
+    ];
+    for (var i = 0; i < paths.length; i++) {
+      try {
+        var res = await fetch(rawBase + paths[i], { method: 'HEAD' });
+        if (res.ok) return rawBase + paths[i];
+      } catch (e) { /* try next */ }
+    }
+    return null;
+  }
+
+  async function autoDetectScreenshots() {
+    var dirs = ['docs/screenshots', 'docs/images', 'screenshots'];
+    for (var i = 0; i < dirs.length; i++) {
+      try {
+        var res = await fetch('https://api.github.com/repos/'
+          + owner + '/' + repo + '/contents/' + dirs[i]);
+        if (!res.ok) continue;
+        var files = await res.json();
+        if (!Array.isArray(files)) continue;
+        var images = files
+          .filter(function (f) { return /\.(png|jpe?g|gif|webp)$/i.test(f.name); })
+          .map(function (f) {
+            return {
+              src: rawBase + dirs[i] + '/' + f.name,
+              caption: f.name.replace(/\.[^.]+$/, '').replace(/[_-]/g, ' '),
+            };
+          });
+        if (images.length > 0) return images;
+      } catch (e) { /* try next */ }
+    }
+    return [];
+  }
+
+  async function autoDetectWorkflows() {
+    try {
+      var res = await fetch('https://api.github.com/repos/'
+        + owner + '/' + repo + '/contents/.github/workflows');
+      if (!res.ok) return [];
+      var files = await res.json();
+      if (!Array.isArray(files)) return [];
+      return files
+        .filter(function (f) { return /\.ya?ml$/i.test(f.name); })
+        .map(function (f) { return f.name.replace(/\.ya?ml$/i, ''); });
+    } catch (e) { return []; }
+  }
+
   /* ── Hero ───────────────────────────────────────────── */
-  function renderHero(repoData, release) {
+  function renderHero(repoData, release, detectedLogo, detectedWorkflows) {
     var name = repoData ? repoData.name : repo;
     var tagline = cfg.tagline || (repoData && repoData.description) || '';
 
@@ -79,17 +145,18 @@
     if (tagline) setMeta('og:description', tagline);
     setMeta('description', tagline);
 
-    /* Title + logo */
+    /* Title + logo (cfg override, else auto-detected) */
     document.getElementById('hero-title').textContent = name;
-    if (cfg.logo) {
+    var logo = cfg.logo || detectedLogo;
+    if (logo) {
       var logoEl = document.getElementById('hero-logo');
-      logoEl.src = cfg.logo;
+      logoEl.src = logo;
       logoEl.alt = name + ' logo';
       logoEl.style.display = '';
       /* Favicon */
       var fav = document.createElement('link');
       fav.rel = 'icon';
-      fav.href = cfg.logo;
+      fav.href = logo;
       document.head.appendChild(fav);
     }
 
@@ -105,13 +172,38 @@
       st.style.display = '';
     }
 
-    /* Badges — accept flat array [{...}, {...}] (one row) or
-     * array of rows [[{...}, {...}], [{...}]] for grouping */
-    if (cfg.badges && cfg.badges.length > 0) {
-      var rows = Array.isArray(cfg.badges[0]) ? cfg.badges : [cfg.badges];
+    /* Badges — three forms (in order of precedence):
+     *   1. Flat array of objects [{alt,img,link}, ...]             → one row
+     *   2. Array of arrays [[{...},{...}], [{...}]]                → multiple rows
+     *   3. Function (B) => [[B.release(), ...], [...]]             → use builders
+     *
+     * If nothing is configured and the repo has workflows or a release,
+     * the template auto-generates a sensible default:
+     *   Row 1: [Release, License]
+     *   Row 2: [<every workflow in .github/workflows/>]
+     */
+    var B = buildBadgeBuilders(repoData, release);
+
+    var badgeSource;
+    if (typeof cfg.badges === 'function') {
+      badgeSource = cfg.badges(B);
+    } else if (cfg.badges) {
+      badgeSource = cfg.badges;
+    } else {
+      /* Auto-default */
+      badgeSource = [];
+      var topRow = [B.release(), B.license()].filter(Boolean);
+      if (topRow.length > 0) badgeSource.push(topRow);
+      if (detectedWorkflows && detectedWorkflows.length > 0) {
+        badgeSource.push(detectedWorkflows.map(function (w) { return B.workflow(w); }));
+      }
+    }
+
+    if (badgeSource && badgeSource.length > 0) {
+      var rows = Array.isArray(badgeSource[0]) ? badgeSource : [badgeSource];
       var badges = document.getElementById('hero-badges');
       badges.innerHTML = rows.map(function (row) {
-        return '<div class="badge-row">' + row.map(function (b) {
+        return '<div class="badge-row">' + row.filter(Boolean).map(function (b) {
           var img = '<img src="' + esc(b.img) + '" alt="' + esc(b.alt || '') + '">';
           return b.link
             ? '<a href="' + esc(b.link) + '" target="_blank" rel="noopener">' + img + '</a>'
@@ -141,8 +233,8 @@
   }
 
   /* ── Screenshots ─────────────────────────────────────── */
-  function renderScreenshots() {
-    var shots = cfg.screenshots || [];
+  function renderScreenshots(detectedScreenshots) {
+    var shots = cfg.screenshots || detectedScreenshots || [];
     if (shots.length === 0) return;
 
     document.getElementById('screenshots-section').style.display = '';
@@ -232,5 +324,110 @@
       document.head.appendChild(el);
     }
     el.setAttribute('content', content);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+   *  Badge builders — used when CONFIG.badges is a function.
+   *  Each helper returns {alt, img, link} ready for rendering,
+   *  or null (filtered out) when the data isn't available.
+   * ═══════════════════════════════════════════════════════════ */
+  function buildBadgeBuilders(repoData, release) {
+    /* shields.io text escaping: '-' → '--', '_' → '__', space → '%20' */
+    function shieldsEsc(s) {
+      return String(s)
+        .replace(/-/g, '--')
+        .replace(/_/g, '__')
+        .replace(/ /g, '%20');
+    }
+
+    return {
+      /* Release — returns null when the repo has no releases */
+      release: function () {
+        if (!release) return null;
+        return {
+          alt: 'Release',
+          img: 'https://img.shields.io/github/v/release/' + owner + '/' + repo + '?include_prereleases',
+          link: repoUrl + '/releases',
+        };
+      },
+
+      /* License — auto-reads SPDX from repo API; override with arg */
+      license: function (spdxOverride) {
+        var spdx = spdxOverride
+          || (repoData && repoData.license && repoData.license.spdx_id);
+        if (!spdx || spdx === 'NOASSERTION') return null;
+        return {
+          alt: 'License: ' + spdx,
+          img: 'https://img.shields.io/badge/License-' + shieldsEsc(spdx) + '-blue.svg',
+          link: repoUrl + '/blob/main/LICENSE',
+        };
+      },
+
+      /* Generic static shields.io badge */
+      shields: function (label, message, color, link) {
+        return {
+          alt: label,
+          img: 'https://img.shields.io/badge/' + shieldsEsc(label)
+            + '-' + shieldsEsc(message) + '-' + (color || 'blue'),
+          link: link || repoUrl,
+        };
+      },
+
+      /* GitHub Actions workflow badge — file name without .yml
+       * opts: { event: 'push' } to filter to a specific trigger */
+      workflow: function (name, opts) {
+        var qs = '';
+        if (opts && opts.event) qs = '?event=' + encodeURIComponent(opts.event);
+        return {
+          alt: name,
+          img: 'https://github.com/' + owner + '/' + repo
+            + '/actions/workflows/' + name + '.yml/badge.svg' + qs,
+          link: 'https://github.com/' + owner + '/' + repo
+            + '/actions/workflows/' + name + '.yml',
+        };
+      },
+
+      /* OpenSSF Best Practices — id is the project ID from bestpractices.dev */
+      bestPractices: function (id) {
+        return {
+          alt: 'OpenSSF Best Practices',
+          img: 'https://www.bestpractices.dev/projects/' + id + '/badge',
+          link: 'https://www.bestpractices.dev/projects/' + id,
+        };
+      },
+
+      /* SonarCloud metric. Project id defaults to "owner_repo"
+       * (SonarCloud default for GitHub-imported projects). */
+      sonar: function (metric, projectOverride) {
+        var project = projectOverride || (owner + '_' + repo);
+        var metricLabel = metric.replace(/_/g, ' ')
+          .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        return {
+          alt: 'SonarCloud ' + metricLabel,
+          img: 'https://sonarcloud.io/api/project_badges/measure?project='
+            + encodeURIComponent(project) + '&metric=' + encodeURIComponent(metric),
+          link: 'https://sonarcloud.io/summary/new_code?id=' + encodeURIComponent(project),
+        };
+      },
+
+      /* OpenSSF Scorecard — auto from repo URL */
+      scorecard: function () {
+        var slug = 'github.com/' + owner + '/' + repo;
+        return {
+          alt: 'OpenSSF Scorecard',
+          img: 'https://api.scorecard.dev/projects/' + slug + '/badge',
+          link: 'https://scorecard.dev/viewer/?uri=' + slug,
+        };
+      },
+
+      /* Escape hatch — full manual control */
+      custom: function (opts) {
+        return {
+          alt: opts.alt || '',
+          img: opts.img,
+          link: opts.link || repoUrl,
+        };
+      },
+    };
   }
 })();

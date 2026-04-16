@@ -32,16 +32,36 @@ var CONFIG = {
   //   { label: 'Documentation', url: 'https://...', primary: false },
   // ],
 
-  /* Shields.io badges. Accept either a flat array (one row) or an
-   * array of arrays for grouping into multiple rows. */
-  // badges: [
-  //   { alt: 'CI', img: 'https://.../badge.svg', link: 'https://...' },
-  // ],
-  // badges: [
-  //   [ { alt: 'Release', img: '...', link: '...' },
-  //     { alt: 'License', img: '...', link: '...' } ],
-  //   [ { alt: 'CI',      img: '...', link: '...' } ],
-  // ],
+  /* Badges — three forms, pick whichever is cleaner:
+   *
+   *   A. Use builders (recommended — no hardcoded URLs):
+   *      badges: function (B) {
+   *        return [
+   *          [ B.release(), B.license(), B.bestPractices(12345) ],
+   *          [ B.workflow('ci'), B.workflow('codeql') ],
+   *          [ B.sonar('coverage'), B.scorecard() ],
+   *        ];
+   *      },
+   *
+   *      Available builders:
+   *        B.release()                            Release tag from GitHub API
+   *        B.license(spdx?)                       Auto from repo API
+   *        B.shields(label, message, color?, link?)   Static shields badge
+   *        B.workflow(name, {event?})             GHA workflow badge
+   *        B.bestPractices(id)                    OpenSSF Best Practices
+   *        B.sonar(metric, projectOverride?)      SonarCloud metric badge
+   *        B.scorecard()                          OpenSSF Scorecard
+   *        B.custom({alt, img, link?})            Full manual override
+   *
+   *   B. Raw data — flat array = one row:
+   *      badges: [{ alt, img, link }, ...]
+   *
+   *   C. Raw data — array of arrays = grouped rows:
+   *      badges: [[{...}, {...}], [{...}]]
+   */
+  // badges: function (B) {
+  //   return [[ B.release(), B.license() ]];
+  // },
 
   /* Footer "muted" line. Default: "{license} · OneDark theme"
    * when the repo has a recognized license, else "OneDark theme". */
