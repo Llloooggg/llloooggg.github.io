@@ -382,6 +382,12 @@
       transition: border-color 0.15s;
     }
 
+    .project-screenshots img:not(.loaded) {
+      color: transparent;
+      font-size: 0;
+      border-color: transparent;
+    }
+
     .project-screenshots img:hover { border-color: var(--accent); }
 
     /* ── Skeleton ────────────────────────────────────── */
@@ -491,7 +497,8 @@
 <body>
   <header id="top" class="hero">
     <div class="container">
-      <img id="avatar" src="" alt="Avatar" class="avatar" style="display:none">
+      <img id="avatar" alt="" class="avatar"
+           src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201%201%22%2F%3E">
       <h1 id="hero-name"></h1>
       <p id="hero-login" class="hero-login" style="display:none"></p>
       <p id="hero-bio" class="hero-bio" style="display:none"></p>
@@ -596,10 +603,11 @@
         var u = await results[0].json();
         var socials = (results[1] && results[1].ok) ? await results[1].json() : [];
 
-        /* Avatar */
-        var av = document.getElementById('avatar');
-        av.src = u.avatar_url + '&s=240';
-        av.style.display = '';
+        /* Avatar — the element ships with a transparent placeholder
+         * so the plain .avatar circle shows while we swap in the
+         * real URL here. Old browsers keep the previous content
+         * visible during the subsequent load, so no flash. */
+        document.getElementById('avatar').src = u.avatar_url + '&s=240';
 
         /* Favicon — clip the square avatar into a circle via canvas */
         var fav = document.querySelector('link[rel="icon"]');
@@ -828,7 +836,9 @@
       if (cfg.screenshots && cfg.screenshots.length > 0) {
         screenshotsHtml = '<div class="project-screenshots" onclick="event.stopPropagation()">'
           + cfg.screenshots.map(function(url) {
-              return '<img src="' + esc(url) + '" alt="Screenshot" onclick="openLightbox(this.src)">';
+              return '<img src="' + esc(url) + '" alt="Screenshot" '
+                + 'onload="this.classList.add(\'loaded\')" '
+                + 'onclick="openLightbox(this.src)">';
             }).join('')
           + '</div>';
       }
