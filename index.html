@@ -489,7 +489,7 @@
   </style>
 </head>
 <body>
-  <header class="hero">
+  <header id="top" class="hero">
     <div class="container">
       <img id="avatar" src="" alt="Avatar" class="avatar" style="display:none">
       <h1 id="hero-name"></h1>
@@ -678,7 +678,7 @@
         document.getElementById('footer-links').innerHTML =
           '<a href="' + esc(u.html_url) + '">GitHub</a>'
           + (hasContacts
-              ? '<span class="sep">&middot;</span><a href="#hero-contacts">Contact</a>'
+              ? '<span class="sep">&middot;</span><a href="#top">Contact</a>'
               : '');
       } catch (e) {
         document.getElementById('hero-name').textContent = GITHUB_USER;
