@@ -673,11 +673,12 @@
         /* GitHub link */
         document.getElementById('hero-gh-link').href = u.html_url;
 
-        /* Footer */
+        /* Footer — Contact anchors to the hero-contacts list if it has any items */
+        var hasContacts = contacts.length > 0;
         document.getElementById('footer-links').innerHTML =
           '<a href="' + esc(u.html_url) + '">GitHub</a>'
-          + (email
-              ? '<span class="sep">&middot;</span><a href="mailto:' + esc(email) + '">Contact</a>'
+          + (hasContacts
+              ? '<span class="sep">&middot;</span><a href="#hero-contacts">Contact</a>'
               : '');
       } catch (e) {
         document.getElementById('hero-name').textContent = GITHUB_USER;
