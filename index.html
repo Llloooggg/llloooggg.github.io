@@ -554,6 +554,30 @@
       return el.innerHTML;
     }
 
+    /* Render the square avatar into a circle on a canvas and return
+     * a data URL suitable for use as a favicon. */
+    function makeRoundFavicon(imgUrl, size) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function () {
+          var canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          var ctx = canvas.getContext('2d');
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(img, 0, 0, size, size);
+          try { resolve(canvas.toDataURL('image/png')); }
+          catch (e) { reject(e); }
+        };
+        img.onerror = reject;
+        img.src = imgUrl;
+      });
+    }
+
     var grid = document.getElementById('project-grid');
 
     /* ═══════════════════════════════════════════════════
@@ -577,14 +601,18 @@
         av.src = u.avatar_url + '&s=240';
         av.style.display = '';
 
-        /* Favicon */
+        /* Favicon — clip the square avatar into a circle via canvas */
         var fav = document.querySelector('link[rel="icon"]');
         if (!fav) {
           fav = document.createElement('link');
           fav.rel = 'icon';
           document.head.appendChild(fav);
         }
-        fav.href = u.avatar_url + '&s=64';
+        makeRoundFavicon(u.avatar_url + '&s=128', 128).then(function (dataUrl) {
+          fav.href = dataUrl;
+        }).catch(function () {
+          fav.href = u.avatar_url + '&s=64';
+        });
 
         /* Name, login, title — GitHub-style: tab = login, page = full name + login */
         document.getElementById('hero-name').textContent = u.name || u.login;
