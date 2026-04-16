@@ -497,8 +497,8 @@
 <body>
   <header id="top" class="hero">
     <div class="container">
-      <img id="avatar" alt="" class="avatar"
-           src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201%201%22%2F%3E">
+      <div id="avatar-placeholder" class="avatar" aria-hidden="true"></div>
+      <img id="avatar" alt="" class="avatar" style="display:none">
       <h1 id="hero-name"></h1>
       <p id="hero-login" class="hero-login" style="display:none"></p>
       <p id="hero-bio" class="hero-bio" style="display:none"></p>
@@ -603,11 +603,16 @@
         var u = await results[0].json();
         var socials = (results[1] && results[1].ok) ? await results[1].json() : [];
 
-        /* Avatar — the element ships with a transparent placeholder
-         * so the plain .avatar circle shows while we swap in the
-         * real URL here. Old browsers keep the previous content
-         * visible during the subsequent load, so no flash. */
-        document.getElementById('avatar').src = u.avatar_url + '&s=240';
+        /* Avatar — the sibling #avatar-placeholder div shows the plain
+         * .avatar circle until the real image finishes loading, so no
+         * broken-image icon or alt text can ever flash. */
+        var av = document.getElementById('avatar');
+        var avPh = document.getElementById('avatar-placeholder');
+        av.onload = function () {
+          av.style.display = '';
+          if (avPh) avPh.style.display = 'none';
+        };
+        av.src = u.avatar_url + '&s=240';
 
         /* Favicon — clip the square avatar into a circle via canvas */
         var fav = document.querySelector('link[rel="icon"]');
